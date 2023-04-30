@@ -4,23 +4,20 @@ import Navbar from './Navbar';
 import MovieCard from './MovieCard';
 import { data } from '../data';
 import { addMovies, setShowFavourites } from '../actions';
+import { connect } from '..';
 
 class App extends React.Component{
 
   componentDidMount(){
 
-    const { store } = this.props;
+    const { dispatch } = this.props;
     
-    store.dispatch(addMovies(data));
-
-    store.subscribe(()=>{
-      this.forceUpdate();
-    });
+    dispatch(addMovies(data));
 
   }
 
   isMovieFavrouite = (movie) => {
-    const { movies } = this.props.store.getState();
+    const { movies } = this.props;
     const { favourites } = movies;
     const index = favourites.indexOf(movie);
     if(index !== -1){
@@ -30,12 +27,12 @@ class App extends React.Component{
   }
 
   onChangeTab = (val) => {
-    this.props.store.dispatch(setShowFavourites(val));
+    this.props.dispatch(setShowFavourites(val));
   }
 
   render(){
 
-    const { movies } = this.props.store.getState();
+    const { movies } = this.props;
 
     const { list, favourites, showFavourites } = movies;
 
@@ -55,7 +52,7 @@ class App extends React.Component{
                 <MovieCard 
                   movie={movie} 
                   key={`movie-${index}`} 
-                  dispatch = {this.props.store.dispatch} 
+                  dispatch = {this.props.dispatch} 
                   isFavourite = {this.isMovieFavrouite(movie)}
                 />
               ))
@@ -70,4 +67,13 @@ class App extends React.Component{
   }
 }
 
-export default App;
+function mapStateToProps(state){
+  return {
+    movies : state.movies,
+    search : state.movie
+  }
+}
+
+const ConnectedAppComponent = connect(mapStateToProps)(App);
+
+export default ConnectedAppComponent;
